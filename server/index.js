@@ -172,6 +172,7 @@ app.post("/api/LanguageLearner/reviews", (req, res) => {
     userId,
     rating,
     comment,
+    validated: false
   };
   reviews.push(newReview);
   res.status(201).json(newReview);
@@ -200,10 +201,10 @@ app.delete("/api/LanguageLearner/reviews/:reviewId", (req, res) => {
 });
 
 // Ranking & Sorting
-app.get("/api/LanguageLearner/ranking-sorting/leaderboard", (req, res) => {
+app.get("/api/LanguageLearner/admin-rankings-page/leaderboard", (req, res) => {
   const platformsWithMetrics = platforms.map((platform) => {
     const platformReviews = reviews.filter(
-      (review) => review.platformId === platform.id.toString()
+      (review) => review.platformId === platform.id.toString() && review.validated === true
     );
     const averageRating = platformReviews.length
       ? platformReviews.reduce(
@@ -225,7 +226,7 @@ app.get("/api/LanguageLearner/ranking-sorting/leaderboard", (req, res) => {
   res.status(200).json(sortedPlatforms);
 });
 
-app.get("/api/LanguageLearner/ranking-sorting/:orderBy", (req, res) => {
+app.get("/api/LanguageLearner/admin-rankings-page/:orderBy", (req, res) => {
   const { orderBy } = req.params;
 
   if (orderBy !== "rating" && orderBy !== "popularity") {
@@ -234,28 +235,69 @@ app.get("/api/LanguageLearner/ranking-sorting/:orderBy", (req, res) => {
     });
   }
 
+  // Default values map
+  const defaultValues = {
+    "Duolingo": { rating: 4.5, popularity: 1000 },
+    "Memrise": { rating: 4.3, popularity: 800 },
+    "Babbel": { rating: 4.2, popularity: 50 },
+    "Busuu": { rating: 4.6, popularity: 400 },
+    "Rosetta Stone": { rating: 3.8, popularity: 20 }
+  };
+
   const platformsWithMetrics = platforms.map((platform) => {
     const platformReviews = reviews.filter(
-      (review) => review.platformId === platform.id.toString()
+      (review) => parseInt(review.platformId) === platform.id && review.validated === true
     );
-    const averageRating = platformReviews.length
-      ? platformReviews.reduce(
-          (sum, review) => sum + parseInt(review.rating),
-          0
-        ) / platformReviews.length
-      : 0;
-    const popularity = platformReviews.length;
-    return {
-      ...platform,
-      averageRating,
-      popularity,
-    };
+    
+    // Get default values if they exist
+    const defaultValue = defaultValues[platform.name];
+    
+    if (defaultValue) {
+      // For platforms with default values
+      if (platformReviews.length > 0) {
+        // Calculate weighted average: (default_rating * default_popularity + sum_of_new_ratings) / (default_popularity + number_of_new_reviews)
+        const sumOfNewRatings = platformReviews.reduce((sum, review) => sum + parseInt(review.rating), 0);
+        const totalRating = (defaultValue.rating * defaultValue.popularity) + sumOfNewRatings;
+        const totalCount = defaultValue.popularity + platformReviews.length;
+        const weightedAverageRating = totalRating / totalCount;
+        
+        return {
+          ...platform,
+          averageRating: parseFloat(weightedAverageRating.toFixed(1)),
+          popularity: defaultValue.popularity + platformReviews.length
+        };
+      } else {
+        // If no new reviews, use default values
+        return {
+          ...platform,
+          averageRating: defaultValue.rating,
+          popularity: defaultValue.popularity
+        };
+      }
+    } else {
+      // For new platforms without default values
+      const averageRating = platformReviews.length
+        ? platformReviews.reduce((sum, review) => sum + parseInt(review.rating), 0) / platformReviews.length
+        : 0;
+      
+      return {
+        ...platform,
+        averageRating: parseFloat(averageRating.toFixed(1)),
+        popularity: platformReviews.length
+      };
+    }
   });
 
   const sortedPlatforms = platformsWithMetrics.sort((a, b) => {
     if (orderBy === "rating") {
+      if (b.averageRating === a.averageRating) {
+        return b.popularity - a.popularity;
+      }
       return b.averageRating - a.averageRating;
-    } else if (orderBy === "popularity") {
+    } else {
+      if (b.popularity === a.popularity) {
+        return b.averageRating - a.averageRating;
+      }
       return b.popularity - a.popularity;
     }
   });

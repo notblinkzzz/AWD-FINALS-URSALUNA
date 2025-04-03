@@ -55,11 +55,33 @@ function setupStarRating() {
         });
 
         star.addEventListener('mouseout', () => {
-            // Remove highlight if star is not selected
-            stars.forEach(s => {
-                if (!s.previousElementSibling.checked) {
-                    s.querySelector('i').classList.remove('text-yellow-400');
-                    s.querySelector('i').classList.add('text-gray-400');
+            // On mouseout, only keep the stars highlighted up to the selected rating
+            const selectedRating = document.querySelector('input[name="rating"]:checked');
+            const selectedIndex = selectedRating ? parseInt(selectedRating.value) - 1 : -1;
+            
+            stars.forEach((s, i) => {
+                const starIcon = s.querySelector('i');
+                if (i <= selectedIndex) {
+                    starIcon.classList.remove('text-gray-400');
+                    starIcon.classList.add('text-yellow-400');
+                } else {
+                    starIcon.classList.remove('text-yellow-400');
+                    starIcon.classList.add('text-gray-400');
+                }
+            });
+        });
+
+        star.addEventListener('click', () => {
+            // When a star is clicked, update all stars up to the clicked one
+            const clickedRating = index + 1;
+            stars.forEach((s, i) => {
+                const starIcon = s.querySelector('i');
+                if (i < clickedRating) {
+                    starIcon.classList.remove('text-gray-400');
+                    starIcon.classList.add('text-yellow-400');
+                } else {
+                    starIcon.classList.remove('text-yellow-400');
+                    starIcon.classList.add('text-gray-400');
                 }
             });
         });
@@ -69,9 +91,9 @@ function setupStarRating() {
 async function handleReviewSubmission(e) {
     e.preventDefault();
 
-    const platformId = document.getElementById('platform').value;
+    const platformId = parseInt(document.getElementById('platform').value);
     const review = document.getElementById('review').value;
-    const rating = document.querySelector('input[name="rating"]:checked')?.value;
+    const rating = parseInt(document.querySelector('input[name="rating"]:checked')?.value);
 
     // Get user ID from localStorage or session
     const userId = localStorage.getItem('userId');
@@ -88,22 +110,25 @@ async function handleReviewSubmission(e) {
 
     try {
         const response = await axios.post('http://localhost:3000/api/LanguageLearner/reviews', {
-            platformId: parseInt(platformId),
+            platformId: platformId,
             userId: userId,
             comment: review,
-            rating: parseInt(rating)
+            rating: rating
         });
 
-        // Notify the rankings page to refresh its data
-        window.dispatchEvent(new CustomEvent('reviewSubmitted'));
+        // Store the timestamp of the last review in localStorage
+        localStorage.setItem('lastReviewTimestamp', Date.now().toString());
         
-        alert('Review submitted successfully!');
+        alert('Review submitted successfully! Your review will be visible in the rankings after admin validation.');
         e.target.reset();
         // Reset star rating display
         document.querySelectorAll('.star-rating i').forEach(star => {
             star.classList.remove('text-yellow-400');
             star.classList.add('text-gray-400');
         });
+
+        // Redirect to rankings page to see the update
+        window.location.href = '../feedback-page/index.html';
     } catch (error) {
         console.error('Error submitting review:', error);
         alert('Error submitting review. Please try again.');

@@ -20,7 +20,7 @@
     />
   </head>
   <body class="bg-gray-100 text-gray-800">
-    <header class="fixed top-0 left-0 w-full z-50 bg-white">
+    <header class="fixed top-0 left-0 w-full z-50 bg-white border-b border-black">
       <div
         class="flex xl:flex-row lg:flex-row md:flex-row flex-col px-2 pb-2 border-b w-full h-full xl:pt-5 xl:items-center lg:items-center md:items-end text-primary"
       >
@@ -47,24 +47,19 @@
           >
             <!--put bg color-->
             <a
-              href="../home-page/index.html"
+              href="#"
               class="hover:text-third transition duration-200"
               >Learn</a
             >
             <a
               href="../validate-platform/index.html"
               class="hover:text-third transition duration-200"
-              >validate-platform</a
+              >Validate</a
             >
             <a
               href="#"
               class="xl:pr-16 lg:pr-16 md:pr-16 hover:text-third transition duration-200"
               >Friends</a
-            >
-            <a
-              class="xl:block lg:block hidden hover:text-third transition duration-200"
-              href="../admin-home-page/index.html"
-              >Home</a
             >
           </nav>
         </div>
@@ -74,20 +69,8 @@
     <main class="flex w-full xl:pt-0 lg:pt-0 md:pt-16 pt-[102px]">
       <!-- palitan mo yung h-calc depende sa top sa sizes-->
       <aside
-        class="border-r flex flex-col items-center px-4 fixed xl:top-[86px] lg:top-[67px] md:top-[67px] top-[103px] left-0 w-[130px] xl:h-[calc(100vh-86px)] lg:h-[calc(100vh-67px)] md:h-[calc(100vh-67px)] h-[calc(100vh-103px)] flex-shrink-0"
+        class="border-r border-black flex flex-col items-center px-4 fixed xl:top-[86px] lg:top-[67px] md:top-[67px] top-[103px] left-0 w-[130px] xl:h-[calc(100vh-86px)] lg:h-[calc(100vh-67px)] md:h-[calc(100vh-67px)] h-[calc(100vh-103px)] flex-shrink-0"
       >
-        <div
-          class="streak-language flex items-center justify-center gap-4 md:gap-5 lg:gap-6 w-full py-2 mt-4"
-        >
-          <div class="streak flex items-center">
-            <img
-              class="h-[1.6rem] w-[1.6rem]"
-              src="./assets/img/flaming-flame-icons-download-free-png-and-vector-icons-766499.png"
-            />
-            <p>7</p>
-          </div>
-          <img class="h-[2rem] w-[2rem]" src="./assets/img/japan.png" />
-        </div>
         <div
           class="flex flex-col items-center justify-evenly gap-4 flex-1 py-4 w-full xl:text-xl lg:text-lg md:text-md text-xs font-semibold text-third"
         >
@@ -103,7 +86,7 @@
             <p class="lg:text-sm">USER LIST</p>
           </a>
           <a
-            href="../languages-page/index.html"
+            href="../admin-platform-management-page/index.html"
             class="flex flex-col items-center gap-2"
           >
             <div
@@ -111,10 +94,10 @@
             >
               <i class="fa-solid fa-scroll text-white text-4xl"></i>
             </div>
-            <p class="lg:text-sm">PLATFORM MANAGEMENT</p>
+            <p class="lg:text-sm text-center">PLATFORM MANAGEMENT</p>
           </a>
           <a
-            href="../review-ratings/index.html"
+            href="../admin-review-ratings/"
             class="flex flex-col items-center gap-2"
           >
             <div
@@ -122,11 +105,11 @@
             >
               <i class="fa-solid fa-trophy text-white text-4xl"></i>
             </div>
-            <p class="lg:text-sm uppercase">Review / Ratings</p>
+            <p class="lg:text-sm uppercase text-center">REVIEWS AND RATINGS</p>
           </a>
 
           <a
-            href="../ranking-sorting/index.html"
+            href="../admin-rankings-page/index.html"
             class="flex flex-col items-center gap-2"
           >
             <div
@@ -134,10 +117,10 @@
             >
               <i class="fa-solid fa-trophy text-white text-4xl"></i>
             </div>
-            <p class="lg:text-sm">RANKINGS / SORTING</p>
+            <p class="lg:text-sm text-center">RANKINGS</p>
           </a>
           <a
-            href="../settings-page/index.html"
+            href="../admin-settings-page/index.html"
             class="flex flex-col items-center gap-2"
           >
             <div
@@ -151,14 +134,15 @@
       </aside>
 
       <section class="flex-1 ml-[130px] w-full h-[100vh]">
-        <div class="max-w-full md:px-20 mx-auto p-6">
-          <div class="mb-6 flex justify-between items-center mt-20">
-            <div
-              class="flex justify-center items-center md:text-4xl text-3xl font-bold text-secondary border-b border-primary"
-            >
-              <p>Reviews & Ratings</p>
-            </div>
-            <div class="flex items-center gap-5 mt-5">
+        <div class="flex flex-col">
+          <div
+            class="w-full flex justify-center items-center xl:mt-24 lg:mt-16 md:mt-1 mt-0.5 xl:py-6 lg:py-4 py-2 md:text-4xl text-3xl font-bold text-secondary border-b border-black"
+          >
+            <p>REVIEWS & RATINGS</p>
+          </div>
+          
+          <div class="max-w-full w-full mx-auto py-10 px-20">
+            <div class="flex justify-end mb-6">
               <div
                 onclick="openAddReviewModal()"
                 class="xl:px-8 xl:py-3.5 lg:px-7 lg:py-3 md:px-7 md:py-2 px-4 py-2 rounded-4xl border-2 border-primary shadow-[-3px_3px_0px_0px_#063f5c] self-center text-center bg-fourth text-primary lg:text-lg text-base hover:bg-primary hover:text-white hover:shadow-none transition-all duration-300"
@@ -167,25 +151,25 @@
                 Add Review
               </div>
             </div>
-          </div>
 
-          <!-- Reviews Table -->
-          <div class="overflow-x-auto bg-white shadow-md rounded-lg mb-6">
-            <table class="min-w-full table-auto">
-              <thead>
-                <tr class="border-b">
-                  <th class="p-4 text-left">Review ID</th>
-                  <th class="p-4 text-left">Platform ID</th>
-                  <th class="p-4 text-left">User ID</th>
-                  <th class="p-4 text-left">Rating</th>
-                  <th class="p-4 text-left">Comment</th>
-                  <th class="p-4 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="reviewTable">
-                <!-- Reviews will be populated here -->
-              </tbody>
-            </table>
+            <!-- Reviews Table -->
+            <div class="overflow-x-auto bg-white shadow-md rounded-lg border border-black mb-6">
+              <table class="min-w-full table-auto">
+                <thead class="bg-fourth border-b border-black">
+                  <tr>
+                    <th class="p-4 text-left">Review ID</th>
+                    <th class="p-4 text-left">Platform ID</th>
+                    <th class="p-4 text-left">User ID</th>
+                    <th class="p-4 text-left">Rating</th>
+                    <th class="p-4 text-left">Comment</th>
+                    <th class="p-4 text-left">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="reviewTable">
+                  <!-- Reviews will be populated here -->
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>

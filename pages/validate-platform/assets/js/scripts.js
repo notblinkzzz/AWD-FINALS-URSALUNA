@@ -1,8 +1,152 @@
 let users = [];
 
 window.onload = function () {
-  getUsers();
+  getPlatforms();
+  getReviews();
 };
+
+function getPlatforms() {
+  console.log('Fetching platforms for validation...');
+  axios
+    .get("http://localhost:3000/api/LanguageLearner/platforms")
+    .then((response) => {
+      console.log('All platforms:', response.data);
+      // Only show platforms that haven't been validated
+      const unvalidatedPlatforms = response.data.filter(platform => !platform.validated);
+      console.log('Unvalidated platforms:', unvalidatedPlatforms);
+
+      const platformSelect = document.getElementById("platformId");
+      
+      if (unvalidatedPlatforms.length === 0) {
+        platformSelect.innerHTML = '<option value="" class="text-gray-500">No platforms pending validation</option>';
+        platformSelect.disabled = true;
+        return;
+      }
+
+      platformSelect.disabled = false;
+      platformSelect.innerHTML = '<option value="">Select Platform</option>';
+      unvalidatedPlatforms.forEach((platform) => {
+        const option = document.createElement("option");
+        option.value = platform.id;
+        option.textContent = `Platform ID: ${platform.id} - ${platform.name}`;
+        platformSelect.appendChild(option);
+      });
+    })
+    .catch((error) => {
+      console.error("Error fetching platforms:", error);
+      showMessage("platformMessage", "Error fetching platforms: " + error.message, false);
+    });
+}
+
+function getReviews() {
+  axios
+    .get("http://localhost:3000/api/LanguageLearner/reviews")
+    .then((response) => {
+      const reviews = response.data;
+      populateReviewSelect(reviews);
+    })
+    .catch((error) => {
+      console.error("Error fetching reviews:", error);
+    });
+}
+
+function populateReviewSelect(reviews) {
+  const reviewSelect = document.getElementById("reviewId");
+  reviewSelect.innerHTML = '<option value="">No reviews pending validation</option>';
+  
+  // Filter for unvalidated reviews only
+  const unvalidatedReviews = reviews.filter(review => !review.validated);
+  
+  if (unvalidatedReviews.length === 0) {
+    reviewSelect.innerHTML = '<option value="" class="text-gray-500">No reviews pending validation</option>';
+    reviewSelect.disabled = true;
+    return;
+  }
+
+  reviewSelect.disabled = false;
+  reviewSelect.innerHTML = '<option value="">Select Review ID</option>';
+  unvalidatedReviews.forEach((review) => {
+    const option = document.createElement("option");
+    option.value = review.id;
+    option.textContent = `Review ID: ${review.id} - Rating: ${review.rating}`;
+    reviewSelect.appendChild(option);
+  });
+}
+
+function showMessage(elementId, message, isSuccess = true) {
+  const messageElement = document.getElementById(elementId);
+  messageElement.classList.remove("text-red-600", "text-green-600");
+  messageElement.classList.add(
+    isSuccess ? "text-green-600" : "text-red-600"
+  );
+  messageElement.textContent = message;
+}
+
+function validatePlatform(event) {
+  event.preventDefault();
+  const platformId = document.getElementById("platformId").value;
+  
+  if (!platformId) {
+    showMessage("platformMessage", "Please select a platform to validate.", false);
+    return;
+  }
+
+  console.log('Validating platform:', platformId);
+
+  // Use the admin validation endpoint
+  axios
+    .post(`http://localhost:3000/api/LanguageLearner/admin/platforms/${platformId}/validate`)
+    .then((response) => {
+      console.log('Platform validated:', response.data);
+      showMessage(
+        "platformMessage",
+        "Platform validated successfully! It will now appear in the platform list and feedback page.",
+        true
+      );
+      // Refresh the platform list to remove the validated platform
+      getPlatforms();
+    })
+    .catch((error) => {
+      console.error('Validation error:', error);
+      console.error('Error response:', error.response);
+      showMessage(
+        "platformMessage",
+        `Error validating platform: ${error.response ? error.response.data : error.message}`,
+        false
+      );
+    });
+}
+
+function validateReview(event) {
+  event.preventDefault();
+  const reviewId = document.getElementById("reviewId").value;
+  
+  if (!reviewId) {
+    showMessage("reviewMessage", "Please select a review to validate.", false);
+    return;
+  }
+
+  axios
+    .post(
+      `http://localhost:3000/api/LanguageLearner/admin/reviews/${reviewId}/validate`
+    )
+    .then((response) => {
+      showMessage(
+        "reviewMessage",
+        "Review validated successfully! It will now be counted in the rankings.",
+        true
+      );
+      // Refresh the reviews list to remove the validated review
+      getReviews();
+    })
+    .catch((error) => {
+      showMessage(
+        "reviewMessage",
+        "Error validating review: " + error.message,
+        false
+      );
+    });
+}
 
 function getUsers() {
   axios
