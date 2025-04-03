@@ -58,16 +58,22 @@ function addUser(event) {
 
   const email = document.getElementById("addEmail").value;
   const name = document.getElementById("addName").value;
+  const password = document.getElementById("addPassword").value;
 
   axios
     .post("http://localhost:3000/api/LanguageLearner/users", {
       email: email,
       name: name,
+      password: password
     })
     .then((response) => {
       alert("User Added: " + JSON.stringify(response.data));
       closeAddUserModal();
       getUsers();
+      // Clear the form
+      document.getElementById("addEmail").value = "";
+      document.getElementById("addName").value = "";
+      document.getElementById("addPassword").value = "";
     })
     .catch((error) => {
       alert("Error adding user: " + error.message);

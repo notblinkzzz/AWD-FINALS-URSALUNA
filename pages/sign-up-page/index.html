@@ -203,7 +203,7 @@
                 >.
               </p>
               <button
-                type="button"
+                type="submit"
                 class="bg-fourth justify-center xl:px-40 xl:py-3 lg:px-36 lg:py-3 md:px-28 md:py-3 px-20 py-2 rounded-full border border-primary shadow-[3px_3px_0px_0px_#063f5c] xl:text-2xl lg:text-xl md:text-xl text-xl hover:bg-primary hover:text-fourth hover:shadow-[3px_3px_0px_0px_#9fe7f5] transition-all duration-300"
               >
                 Sign Up
@@ -344,6 +344,37 @@
       </div>
     </footer>
 
-    <script src="./assets/js/scripts.js"></script>
+    <script>
+      function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const showPasswordCheckbox = document.getElementById('showPassword');
+        passwordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
+      }
+
+      document.getElementById('signupForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const name = document.getElementById('name').value;
+        const password = document.getElementById('password').value;
+
+        try {
+          const response = await axios.post('http://localhost:3000/api/LanguageLearner/users', {
+            email,
+            name,
+            password,
+            role: 'user' // Set default role as user
+          });
+
+          if (response.status === 201) {
+            alert('Account created successfully! Please login.');
+            window.location.href = '../login-page/index.html';
+          }
+        } catch (error) {
+          console.error('Error creating account:', error);
+          alert('Error creating account. Please try again.');
+        }
+      });
+    </script>
   </body>
 </html>

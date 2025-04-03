@@ -34,22 +34,31 @@ function togglePassword() {
   passwordField.type = passwordField.type === "password" ? "text" : "password";
 }
 
-function validateForm(event) {
-  event.preventDefault();
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-  if (password.length < 6) {
-    alert("Password must be at least 6 characters long");
-    return false;
-  }
+    try {
+        const response = await axios.post('http://localhost:3000/api/LanguageLearner/users/login', {
+            email: email,
+            password: password
+        });
 
-  if (email !== "admin" || password !== "admin123") {
-    alert("Invalid username or password. You are not an admin.");
-    return false;
-  }
+        // Store user data
+        localStorage.setItem('userId', response.data.id);
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('userRole', response.data.role);
 
-  window.location.href = "../user-list/index.html";
-  return false;
-}
+        // Redirect based on role
+        if (response.data.role === 'admin') {
+            window.location.href = '../admin-home-page/index.html';
+        } else {
+            window.location.href = '../home-page/index.html';
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('Login failed. Please check your credentials.');
+    }
+});

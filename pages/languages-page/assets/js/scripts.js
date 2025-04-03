@@ -1,39 +1,49 @@
 let platforms = [];
 
-window.onload = function () {
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Platform management page loaded');
   getPlatforms();
-};
+});
 
-function getPlatforms() {
-  axios
-    .get("http://localhost:3000/api/LanguageLearner/platforms")
-    .then((response) => {
-      platforms = response.data;
-      displayPlatforms(platforms);
-    })
-    .catch((error) => {
-      alert("Error fetching platforms: " + error.message);
-    });
+async function getPlatforms() {
+  try {
+    const response = await axios.get('http://localhost:3000/api/LanguageLearner/platforms');
+    console.log('All platforms:', response.data);
+    // Only show validated platforms
+    const validatedPlatforms = response.data.filter(platform => platform.validated === true);
+    console.log('Validated platforms:', validatedPlatforms);
+    displayPlatforms(validatedPlatforms);
+  } catch (error) {
+    console.error('Error fetching platforms:', error);
+    alert('Error fetching platforms: ' + error.message);
+  }
 }
 
 function displayPlatforms(platformsList) {
-  const platformTable = document.getElementById("platformTable");
-  platformTable.innerHTML = "";
+  const platformTable = document.getElementById('platformTable');
+  platformTable.innerHTML = '';
 
-  platformsList.forEach((platform) => {
-    platformTable.innerHTML += `
-          <tr class="border-b">
-            <td class="p-4">${platform.id}</td>
-            <td class="p-4">${platform.name}</td>
-            <td class="p-4">${platform.website}</td>
-            <td class="p-4">${platform.languagesOffered}</td>
-            <td class="p-4">
-              <button onclick="openViewPlatformModal(${platform.id})" class="text-blue-500 hover:text-blue-700 mr-5">View</button>
-              <button onclick="openEditPlatformModal(${platform.id})" class="text-blue-500 hover:text-blue-700">Update</button>
-              <button onclick="deletePlatform(${platform.id})" class="text-red-500 hover:text-red-700 ml-4">Delete</button>
-            </td>
-          </tr>
-        `;
+  if (platformsList.length === 0) {
+    platformTable.innerHTML = '<tr><td colspan="5" class="p-4 text-center">No validated platforms available</td></tr>';
+    return;
+  }
+
+  platformsList.forEach(platform => {
+    const row = document.createElement('tr');
+    row.className = 'border-b';
+    row.innerHTML = `
+      <td class="p-4">${platform.id}</td>
+      <td class="p-4">${platform.name}</td>
+      <td class="p-4">${platform.website}</td>
+      <td class="p-4">${platform.languagesOffered || platform.languages}</td>
+      <td class="p-4">
+        <button onclick="openViewPlatformModal(${platform.id})" class="text-blue-500 hover:text-blue-700 mr-5">View</button>
+        <button onclick="openEditPlatformModal(${platform.id})" class="text-blue-500 hover:text-blue-700">Update</button>
+        <button onclick="deletePlatform(${platform.id})" class="text-red-500 hover:text-red-700 ml-4">Delete</button>
+      </td>
+    `;
+    platformTable.appendChild(row);
   });
 }
 

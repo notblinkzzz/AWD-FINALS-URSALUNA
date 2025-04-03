@@ -11,6 +11,66 @@ let users = [];
 let platforms = [];
 let reviews = [];
 
+// Initialize admin account
+const adminAccount = {
+  id: 1,
+  email: 'admin',
+  password: 'admin123',
+  name: 'Administrator',
+  role: 'admin'
+};
+users.push(adminAccount);
+
+// Initialize default language learning platforms
+const defaultPlatforms = [
+  {
+    id: 1,
+    name: "Duolingo",
+    website: "https://www.duolingo.com",
+    languagesOffered: ["Spanish", "French", "German", "Italian", "Portuguese", "Japanese", "Korean", "Chinese", "Russian"],
+    description: "A free language-learning platform with a gamified approach. Features bite-sized lessons, daily streaks, and a mobile app.",
+    submittedBy: "admin",
+    validated: true
+  },
+  {
+    id: 2,
+    name: "Memrise",
+    website: "https://www.memrise.com",
+    languagesOffered: ["Spanish", "French", "German", "Japanese", "Korean", "Chinese", "Italian", "Russian", "Portuguese"],
+    description: "Uses spaced repetition and memory techniques to help users learn languages effectively. Features video clips of native speakers.",
+    submittedBy: "admin",
+    validated: true
+  },
+  {
+    id: 3,
+    name: "Babbel",
+    website: "https://www.babbel.com",
+    languagesOffered: ["Spanish", "French", "German", "Italian", "Portuguese", "Russian", "Dutch", "Turkish", "Polish"],
+    description: "Focuses on conversation skills with real-world dialogues. Offers structured lessons and speech recognition technology.",
+    submittedBy: "admin",
+    validated: true
+  },
+  {
+    id: 4,
+    name: "Busuu",
+    website: "https://www.busuu.com",
+    languagesOffered: ["Spanish", "French", "German", "Italian", "Portuguese", "Russian", "Chinese", "Japanese", "Arabic"],
+    description: "Combines AI-powered learning with community features. Offers official language certificates and personalized study plans.",
+    submittedBy: "admin",
+    validated: true
+  },
+  {
+    id: 5,
+    name: "Rosetta Stone",
+    website: "https://www.rosettastone.com",
+    languagesOffered: ["Spanish", "French", "German", "Italian", "Portuguese", "Chinese", "Japanese", "Korean", "Arabic"],
+    description: "Uses immersive learning techniques with no translations. Focuses on natural language acquisition through visual and audio cues.",
+    submittedBy: "admin",
+    validated: true
+  }
+];
+platforms.push(...defaultPlatforms);
+
 // User Account Management
 app.post("/api/LanguageLearner/users", (req, res) => {
   const { email, name, password } = req.body;
@@ -23,11 +83,20 @@ app.get("/api/LanguageLearner/users", (req, res) =>
   res.status(200).json(users)
 );
 
-app.get("/api/LanguageLearner/users/login/:email", (req, res) => {
-  const user = users.find((u) => u.email === req.params.email);
-  user
-    ? res.status(200).json(user)
-    : res.status(404).json({ message: "User not found" });
+app.post("/api/LanguageLearner/users/login", (req, res) => {
+  const { email, password } = req.body;
+  const user = users.find((u) => u.email === email && u.password === password);
+  
+  if (user) {
+    res.status(200).json({ 
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role || 'user'
+    });
+  } else {
+    res.status(401).json({ message: "Invalid email or password" });
+  }
 });
 
 app.put("/api/LanguageLearner/users/:id", (req, res) => {

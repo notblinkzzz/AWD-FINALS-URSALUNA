@@ -128,14 +128,35 @@
       };
 
       function getPlatforms() {
+        console.log('Fetching platforms for validation...');
         axios
           .get("http://localhost:3000/api/LanguageLearner/platforms")
           .then((response) => {
-            const platforms = response.data;
-            populatePlatformSelect(platforms);
+            console.log('All platforms:', response.data);
+            // Only show platforms that haven't been validated
+            const unvalidatedPlatforms = response.data.filter(platform => !platform.validated);
+            console.log('Unvalidated platforms:', unvalidatedPlatforms);
+
+            const platformSelect = document.getElementById("platformId");
+            
+            if (unvalidatedPlatforms.length === 0) {
+              platformSelect.innerHTML = '<option value="">No platforms pending validation</option>';
+              platformSelect.disabled = true;
+              return;
+            }
+
+            platformSelect.disabled = false;
+            platformSelect.innerHTML = '<option value="">Select Platform</option>';
+            unvalidatedPlatforms.forEach((platform) => {
+              const option = document.createElement("option");
+              option.value = platform.id;
+              option.textContent = `Platform ID: ${platform.id} - ${platform.name}`;
+              platformSelect.appendChild(option);
+            });
           })
           .catch((error) => {
             console.error("Error fetching platforms:", error);
+            showMessage("platformMessage", "Error fetching platforms: " + error.message, false);
           });
       }
 
@@ -153,6 +174,13 @@
 
       function populatePlatformSelect(platforms) {
         const platformSelect = document.getElementById("platformId");
+        platformSelect.innerHTML = '<option value="">Select Platform</option>';
+        
+        if (platforms.length === 0) {
+          showMessage("platformMessage", "No platforms pending validation.", true);
+          return;
+        }
+
         platforms.forEach((platform) => {
           const option = document.createElement("option");
           option.value = platform.id;
@@ -173,7 +201,7 @@
 
       function showMessage(elementId, message, isSuccess = true) {
         const messageElement = document.getElementById(elementId);
-        messageElement.classList.remove("text-red-600", "text-gray-800");
+        messageElement.classList.remove("text-red-600", "text-green-600");
         messageElement.classList.add(
           isSuccess ? "text-green-600" : "text-red-600"
         );
@@ -183,21 +211,33 @@
       function validatePlatform(event) {
         event.preventDefault();
         const platformId = document.getElementById("platformId").value;
+        
+        if (!platformId) {
+          showMessage("platformMessage", "Please select a platform to validate.", false);
+          return;
+        }
+
+        console.log('Validating platform:', platformId);
+
+        // Use the admin validation endpoint
         axios
-          .post(
-            `http://localhost:3000/api/LanguageLearner/admin/platforms/${platformId}/validate`
-          )
+          .post(`http://localhost:3000/api/LanguageLearner/admin/platforms/${platformId}/validate`)
           .then((response) => {
+            console.log('Platform validated:', response.data);
             showMessage(
               "platformMessage",
-              "Platform validated successfully!",
+              "Platform validated successfully! It will now appear in the platform list and feedback page.",
               true
             );
+            // Refresh the platform list to remove the validated platform
+            getPlatforms();
           })
           .catch((error) => {
+            console.error('Validation error:', error);
+            console.error('Error response:', error.response);
             showMessage(
               "platformMessage",
-              "Error validating platform: " + error.message,
+              `Error validating platform: ${error.response ? error.response.data : error.message}`,
               false
             );
           });
@@ -225,6 +265,12 @@
             );
           });
       }
+
+      // Initialize when page loads
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('Admin validation page loaded');
+        getPlatforms();
+      });
     </script>
   </body>
 </html>
