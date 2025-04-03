@@ -94,6 +94,9 @@ async function handleReviewSubmission(e) {
             rating: parseInt(rating)
         });
 
+        // Notify the rankings page to refresh its data
+        window.dispatchEvent(new CustomEvent('reviewSubmitted'));
+        
         alert('Review submitted successfully!');
         e.target.reset();
         // Reset star rating display

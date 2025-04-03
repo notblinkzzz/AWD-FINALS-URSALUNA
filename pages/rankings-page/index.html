@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Langora - Platform Rankings</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="../../src/output.css" rel="stylesheet" />
     <link rel="stylesheet" href="./assets/css/style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,19 +16,6 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: '#063F5C',
-              secondary: '#FF9B3F',
-              third: '#0B5075'
-            }
-          }
-        }
-      }
-    </script>
   </head>
 
   <body class="flex flex-col h-screen">
@@ -135,11 +121,11 @@
             >
               <i class="fa-solid fa-trophy text-white text-4xl"></i>
             </div>
-            <p class="lg:text-sm uppercase">FEEDBACKS</p>
+            <p class="lg:text-sm">FEEDBACKS</p>
           </a>
 
           <a
-            href="../ranking-sorting/index.html"
+            href="#"
             class="flex flex-col items-center gap-2"
           >
             <div
@@ -163,15 +149,21 @@
         </div>
       </aside>
 
-      <section class="flex-1 ml-[130px] w-full h-[100vh]">
-        <div class="max-w-full w-full mx-auto py-10 px-20">
-          <div class="mb-6 flex justify-between items-center mt-20">
-            <div
-              class="flex justify-center items-center md:text-4xl text-3xl font-bold text-secondary border-b border-primary"
-            >
-              <p>Platform Ranking and Sorting</p>
-            </div>
-            <div class="flex items-center gap-5 mt-5">
+      <section class="flex-1 ml-[130px] w-full h-screen font-semibold">
+        <div
+          class="w-full flex justify-center text-2xl font-bold text-secondary border-b border-primary xl:mt-22 lg:mt-16 md:mt-1 mt-0.5 xl:py-6 lg:py-4 py-2 md:text-4xl"
+        >
+          <p>PLATFORM RANKING AND SORTING</p>
+        </div>
+        <div class="w-full xl:p-7 lg:p-5 md:p-4 p-2">
+          <a href="../home-page/index.html"
+            ><i
+              class="fa-solid fa-arrow-left-long md:text-3xl text-2xl text-primary"
+            ></i
+          ></a>
+          
+          <div class="w-full px-5 xl:text-2xl lg:text-xl md:text-lg text-md">
+            <div class="flex justify-end items-center gap-5 mt-5">
               <div class="flex justify-center mb-4">
                 <select
                   id="sortBy"
@@ -188,22 +180,22 @@
                 </button>
               </div>
             </div>
-          </div>
 
-          <div class="w-full mx-auto p-6">
-            <div class="overflow-x-auto bg-white shadow-md rounded-lg mb-6">
-              <table class="min-w-full table-auto">
-                <thead>
-                  <tr class="border-b bg-primary text-white">
-                    <th class="p-4 text-left">ID</th>
-                    <th class="p-4 text-left">Name</th>
-                    <th class="p-4 text-left">Average Rating</th>
-                    <th class="p-4 text-left">Popularity (Reviews)</th>
-                    <th class="p-4 text-left">Description</th>
-                  </tr>
-                </thead>
-                <tbody id="platformTable"></tbody>
-              </table>
+            <div class="w-full mx-auto">
+              <div class="overflow-x-auto bg-white shadow-md rounded-lg mb-6">
+                <table class="min-w-full table-auto">
+                  <thead>
+                    <tr class="border-b bg-primary text-white">
+                      <th class="p-4 text-left">ID</th>
+                      <th class="p-4 text-left">Name</th>
+                      <th class="p-4 text-left">Average Rating</th>
+                      <th class="p-4 text-left">Popularity (Reviews)</th>
+                      <th class="p-4 text-left">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody id="platformTable"></tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
